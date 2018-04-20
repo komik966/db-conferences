@@ -1,6 +1,6 @@
 CREATE TABLE customers (
   id           INT IDENTITY CONSTRAINT pk_customers PRIMARY KEY,
-  phone_number VARCHAR(32) CONSTRAINT unique_customers_phone_number UNIQUE NOT NULL
+  phone_number VARCHAR(32) NOT NULL CONSTRAINT unique_customers_phone_number UNIQUE
 );
 
 CREATE TABLE customers_individual (
