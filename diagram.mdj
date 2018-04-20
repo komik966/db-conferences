@@ -6287,7 +6287,7 @@
 								},
 								"cardinality": "0..*"
 							},
-							"identifying": true
+							"identifying": false
 						},
 						{
 							"_type": "ERDRelationship",
