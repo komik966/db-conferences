@@ -4,6 +4,6 @@ CREATE TABLE companies (
   name VARCHAR(255) NOT NULL
 );
 
-INSERT INTO companies (contact_person_id, name) VALUES (1, 'Dziady');
-INSERT INTO companies (contact_person_id, name) VALUES (1, 'Pan Tadeusz');
-INSERT INTO companies (contact_person_id, name) VALUES (2, 'Lalka');
+INSERT INTO companies (contact_person_id, name) VALUES (1, 'Harris Inc');
+INSERT INTO companies (contact_person_id, name) VALUES (1, 'Lehner LLC');
+INSERT INTO companies (contact_person_id, name) VALUES (2, 'Haley Group');

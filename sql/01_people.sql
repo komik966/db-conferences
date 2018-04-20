@@ -4,5 +4,5 @@ CREATE TABLE people (
   second_name VARCHAR(255) NOT NULL,
 );
 
-INSERT INTO people (first_name, second_name) VALUES ('Adam', 'Mickiewicz');
-INSERT INTO people (first_name, second_name) VALUES ('Bolesław', 'Prus');
+INSERT INTO people (first_name, second_name) VALUES ('Lyla', 'Heaney');
+INSERT INTO people (first_name, second_name) VALUES ('Willis', 'McClure');
