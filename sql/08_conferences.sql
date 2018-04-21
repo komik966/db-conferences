@@ -35,7 +35,16 @@ CREATE TABLE prices_specifications (
 );
 
 INSERT INTO prices_specifications (valid_from, valid_through, price)
-VALUES (CURRENT_TIMESTAMP, DATEADD(WEEK, 1, CURRENT_TIMESTAMP), 150.00)
+VALUES (CURRENT_TIMESTAMP, DATEADD(WEEK, 1, CURRENT_TIMESTAMP), 150.00);
 
 INSERT INTO prices_specifications (valid_from, valid_through, price)
-VALUES (CURRENT_TIMESTAMP, DATEADD(WEEK, 1, CURRENT_TIMESTAMP), 70.00)
+VALUES (CURRENT_TIMESTAMP, DATEADD(WEEK, 1, CURRENT_TIMESTAMP), 70.00);
+
+CREATE TABLE conferences_days_prices (
+  --   TODO: daty z price specifications nie mogą się pokrywać i muszą być ciągłe per conference_day
+  conference_day_id      INT CONSTRAINT fk_conferences_days_prices_conference_day FOREIGN KEY REFERENCES conferences_days,
+  price_specification_id INT CONSTRAINT fk_conferences_days_prices_price_specification FOREIGN KEY REFERENCES prices_specifications,
+  CONSTRAINT pk_conferences_days_prices PRIMARY KEY (conference_day_id, price_specification_id)
+);
+
+INSERT INTO conferences_days_prices (conference_day_id, price_specification_id) VALUES (1, 1);
