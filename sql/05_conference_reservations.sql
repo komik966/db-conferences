@@ -8,7 +8,7 @@ CREATE TABLE conference_reservation_details (
   id                        INT IDENTITY CONSTRAINT pk_conference_reservation_details PRIMARY KEY,
   conference_day_id         INT NOT NULL CONSTRAINT fk_conference_reservation_details_conference_day FOREIGN KEY REFERENCES conference_days,
   conference_reservation_id INT NOT NULL CONSTRAINT fk_conference_reservation_details_conference_reservation FOREIGN KEY REFERENCES conference_reservations,
-  -- TODO: suma attendees_amount_reserved nie może być większa od conferences.maximum_attendee_capacity
+  -- TODO: suma attendees_amount nie może być większa od conferences.maximum_attendee_capacity
   attendees_amount          INT NOT NULL
 );
 CREATE TABLE conference_attendees (
