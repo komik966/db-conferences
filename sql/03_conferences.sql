@@ -9,3 +9,18 @@ CREATE TABLE conferences (
   student_discount          FLOAT DEFAULT NULL,
   maximum_attendee_capacity INT          NOT NULL
 );
+
+CREATE TABLE conference_discounts
+(
+  id            INT IDENTITY CONSTRAINT pk_conference_discounts PRIMARY KEY,
+  conference_id INT       NOT NULL CONSTRAINT fk_conference_discounts_conference REFERENCES conferences,
+  due_date      DATETIME2 NOT NULL,
+  discount      FLOAT     NOT NULL
+);
+
+CREATE TABLE conference_days
+(
+  id            INT IDENTITY CONSTRAINT pk_conference_days PRIMARY KEY,
+  conference_id INT  NOT NULL CONSTRAINT fk_conference_days_conference REFERENCES conferences,
+  date          DATE NOT NULL
+);
