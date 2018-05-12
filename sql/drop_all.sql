@@ -1,0 +1,14 @@
+drop table workshop_attendees;
+drop table workshop_reservations;
+drop table conference_attendees;
+drop table conference_reservation_details;
+drop table conference_reservations;
+drop table workshop_days;
+drop table workshops;
+drop table conference_days;
+drop table conference_discounts;
+drop table conferences;
+drop table companies;
+drop table customer_individual;
+drop table customers;
+drop table people;
