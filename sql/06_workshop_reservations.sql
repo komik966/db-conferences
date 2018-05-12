@@ -9,7 +9,9 @@ CREATE TABLE workshop_reservations (
 );
 CREATE TABLE workshop_attendees (
   id                      INT       IDENTITY CONSTRAINT pk_workshop_attendees PRIMARY KEY,
+  -- ?TODO? sprawdzenie czy conference_attendee.conference pokrywa się workshop.conference
   conference_attendee_id  INT NOT NULL CONSTRAINT fk_workshop_attendees_conference_attendee FOREIGN KEY REFERENCES conference_attendees,
   workshop_reservation_id INT NOT NULL CONSTRAINT fk_workshop_attendees_workshop_reservation FOREIGN KEY REFERENCES workshop_reservations,
+  -- Potrzebne? - możliwość dorezerowania worshop do reservation conference?
   payment_date            DATETIME2 DEFAULT NULL
 );

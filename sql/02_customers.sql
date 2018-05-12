@@ -5,11 +5,12 @@ CREATE TABLE customers (
 
 CREATE TABLE customer_individual (
   customer_id INT CONSTRAINT pk_customer_individual PRIMARY KEY CONSTRAINT fk_customer_individual_customer FOREIGN KEY REFERENCES customers,
-  person_id   INT NOT NULL CONSTRAINT unique_customer_individual_person UNIQUE CONSTRAINT fk_customer_individual_person FOREIGN KEY REFERENCES people
+  person_id   INT NOT NULL CONSTRAINT unique_customer_individual_person UNIQUE CONSTRAINT fk_customer_individual_person FOREIGN KEY REFERENCES people,
+  student_card_number VARCHAR(32) DEFAULT NULL
 );
 
 CREATE TABLE companies (
-  customer_id INT          NOT NULL CONSTRAINT fk_companies_contact_person FOREIGN KEY REFERENCES people,
+  customer_id INT          NOT NULL CONSTRAINT fk_companies_customer FOREIGN KEY REFERENCES customers,
   name        VARCHAR(255) NOT NULL
 );
 
