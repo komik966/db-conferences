@@ -2,7 +2,7 @@ CREATE TABLE conference_reservations (
   id               INT                IDENTITY CONSTRAINT pk_conference_reservations PRIMARY KEY,
   customer_id      INT       NOT NULL CONSTRAINT fk_conference_reservations_customer FOREIGN KEY REFERENCES customers,
   reservation_date DATETIME2 NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  payment_date     DATETIME2 NOT NULL
+  payment_date     DATETIME2 DEFAULT NULL
 );
 CREATE TABLE conference_reservation_details (
   id                        INT IDENTITY CONSTRAINT pk_conference_reservation_details PRIMARY KEY,

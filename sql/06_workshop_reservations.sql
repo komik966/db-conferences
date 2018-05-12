@@ -1,6 +1,7 @@
 CREATE TABLE workshop_reservations (
   id                               INT                IDENTITY CONSTRAINT pk_workshop_reservations PRIMARY KEY,
   conference_reservation_detail_id INT       NOT NULL CONSTRAINT fk_workshop_reservations_conference_reservation_detail FOREIGN KEY REFERENCES conference_reservation_details,
+  -- TODO: workshop_day.(start/stop date) = conference_reservation_details.conference_day.date
   workshop_day_id                  INT       NOT NULL CONSTRAINT fk_workshop_reservations_workshop_day FOREIGN KEY REFERENCES workshop_days,
   -- TODO: suma attendees_amount nie może być większa od workshop_days.maximum_attendee_capacity
   attendees_amount                 INT       NOT NULL,
