@@ -604,7 +604,7 @@
 									"visible": true,
 									"enabled": true,
 									"lineColor": "#000000",
-									"fillColor": "#ebffd8",
+									"fillColor": "#ffffff",
 									"fontColor": "#000000",
 									"font": "Arial;13;1",
 									"showShadow": true,
@@ -643,7 +643,7 @@
 											"visible": true,
 											"enabled": true,
 											"lineColor": "#000000",
-											"fillColor": "#ebffd8",
+											"fillColor": "#ffffff",
 											"fontColor": "#000000",
 											"font": "Arial;13;0",
 											"showShadow": true,
@@ -667,7 +667,7 @@
 											"visible": true,
 											"enabled": true,
 											"lineColor": "#000000",
-											"fillColor": "#ebffd8",
+											"fillColor": "#ffffff",
 											"fontColor": "#000000",
 											"font": "Arial;13;0",
 											"showShadow": true,
@@ -683,7 +683,7 @@
 									"visible": true,
 									"enabled": true,
 									"lineColor": "#000000",
-									"fillColor": "#ebffd8",
+									"fillColor": "#ffffff",
 									"fontColor": "#000000",
 									"font": "Arial;13;0",
 									"showShadow": true,
@@ -699,7 +699,7 @@
 							"visible": true,
 							"enabled": true,
 							"lineColor": "#000000",
-							"fillColor": "#ebffd8",
+							"fillColor": "#ffffff",
 							"fontColor": "#000000",
 							"font": "Arial;13;0",
 							"showShadow": true,
@@ -1138,7 +1138,7 @@
 									"containerExtending": false,
 									"left": 536,
 									"top": 141,
-									"width": 125,
+									"width": 146,
 									"height": 13,
 									"autoResize": false,
 									"underline": false,
@@ -1159,30 +1159,6 @@
 									"subViews": [
 										{
 											"_type": "ERDColumnView",
-											"_id": "AAAAAAFixB5pkAoU+6s=",
-											"_parent": {
-												"$ref": "AAAAAAFixB4wKwoHa6Q="
-											},
-											"model": {
-												"$ref": "AAAAAAFixB5pewoRVBk="
-											},
-											"visible": true,
-											"enabled": true,
-											"lineColor": "#000000",
-											"fillColor": "#ffffff",
-											"fontColor": "#000000",
-											"font": "Arial;13;0",
-											"showShadow": true,
-											"containerChangeable": false,
-											"containerExtending": false,
-											"left": 541,
-											"top": 164,
-											"width": 115,
-											"height": 13,
-											"autoResize": false
-										},
-										{
-											"_type": "ERDColumnView",
 											"_id": "AAAAAAFjUckUQ2RwyzE=",
 											"_parent": {
 												"$ref": "AAAAAAFixB4wKwoHa6Q="
@@ -1200,8 +1176,8 @@
 											"containerChangeable": false,
 											"containerExtending": false,
 											"left": 541,
-											"top": 179,
-											"width": 115,
+											"top": 164,
+											"width": 136,
 											"height": 13,
 											"autoResize": false
 										},
@@ -1224,8 +1200,8 @@
 											"containerChangeable": false,
 											"containerExtending": false,
 											"left": 541,
-											"top": 194,
-											"width": 115,
+											"top": 179,
+											"width": 136,
 											"height": 13,
 											"autoResize": false
 										}
@@ -1241,8 +1217,8 @@
 									"containerExtending": false,
 									"left": 536,
 									"top": 159,
-									"width": 125,
-									"height": 53,
+									"width": 146,
+									"height": 38,
 									"autoResize": false
 								}
 							],
@@ -1257,8 +1233,8 @@
 							"containerExtending": false,
 							"left": 536,
 							"top": 136,
-							"width": 125,
-							"height": 76,
+							"width": 146,
+							"height": 61,
 							"autoResize": true,
 							"nameLabel": {
 								"$ref": "AAAAAAFixB4wKwoGuP0="
@@ -4975,7 +4951,7 @@
 							},
 							"name": "person_id",
 							"length": 0,
-							"primaryKey": true,
+							"primaryKey": false,
 							"foreignKey": true,
 							"nullable": false,
 							"unique": false
@@ -5120,26 +5096,13 @@
 					"columns": [
 						{
 							"_type": "ERDColumn",
-							"_id": "AAAAAAFixB5pewoRVBk=",
-							"_parent": {
-								"$ref": "AAAAAAFixB4wKgoDHdc="
-							},
-							"name": "id",
-							"length": 0,
-							"primaryKey": true,
-							"foreignKey": false,
-							"nullable": false,
-							"unique": false
-						},
-						{
-							"_type": "ERDColumn",
 							"_id": "AAAAAAFjUckUM2RtF7E=",
 							"_parent": {
 								"$ref": "AAAAAAFixB4wKgoDHdc="
 							},
 							"name": "customer_id",
 							"length": 0,
-							"primaryKey": false,
+							"primaryKey": true,
 							"foreignKey": true,
 							"nullable": false,
 							"unique": false
