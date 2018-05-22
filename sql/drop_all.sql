@@ -11,4 +11,5 @@ drop table conferences;
 drop table companies;
 drop table customer_individual;
 drop table customers;
+drop table student_card;
 drop table people;

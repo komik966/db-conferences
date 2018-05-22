@@ -1,17 +1,22 @@
 CREATE TABLE workshops (
-  id   INT IDENTITY CONSTRAINT pk_workshops PRIMARY KEY,
-  name VARCHAR(64) NOT NULL,
-  -- drukowanie ulotek / landingi? maximum_attendee_capacity INT        NOT NULL
+  id                        INT IDENTITY,
+  name                      VARCHAR(64) NOT NULL,
+  maximum_attendee_capacity INT         NOT NULL,
+
+  CONSTRAINT pk_workshops PRIMARY KEY (id),
 );
 
 CREATE TABLE workshop_days (
-  id                        INT IDENTITY CONSTRAINT pk_workshop_days PRIMARY KEY,
-  workshop_id               INT        NOT NULL CONSTRAINT fk_workshop_days_workshop REFERENCES workshops,
-  conference_day_id         INT        NOT NULL CONSTRAINT fk_workshop_days_conference_day REFERENCES conference_days,
-  -- TODO: start_date, end_date - daty w tym samym dniu co conference_days.date
-  -- start_date, end_date - time zamiast datetime?
-  start_date                DATETIME2  NOT NULL,
-  end_date                  DATETIME2  NOT NULL,
+  id                        INT IDENTITY,
+  workshop_id               INT        NOT NULL,
+  conference_day_id         INT        NOT NULL,
+  start_time                TIME(0)    NOT NULL,
+  end_time                  TIME(0)    NOT NULL,
   price                     SMALLMONEY NOT NULL,
-  maximum_attendee_capacity INT        NOT NULL
+  maximum_attendee_capacity INT        NOT NULL,
+
+  CONSTRAINT pk_workshop_days PRIMARY KEY (id),
+  CONSTRAINT fk_workshop_days_workshop FOREIGN KEY (workshop_id) REFERENCES workshops,
+  CONSTRAINT fk_workshop_days_conference_day FOREIGN KEY (conference_day_id) REFERENCES conference_days,
+  CONSTRAINT ck_workshop_days_end_time CHECK (end_time > start_time)
 );
