@@ -24,8 +24,20 @@ CREATE TABLE conference_discounts
   CONSTRAINT pk_conference_discounts PRIMARY KEY (id),
   CONSTRAINT fk_conference_discounts_conference FOREIGN KEY (conference_id) REFERENCES conferences,
   CONSTRAINT ck_conference_discounts_discount CHECK (discount > 0 AND discount <= 1),
-  -- TODO: daty dla tej samej konferencji nie mogą być takie same oraz muszą być wcześniejsze niż start konferencji i późniejsze niż CURRENT_TIMESTAMP
+  CONSTRAINT ck_conference_discounts_due_date CHECK (due_date > CURRENT_TIMESTAMP),
+  CONSTRAINT uq_conference_discounts_due_date UNIQUE (conference_id, due_date)
 );
+CREATE TRIGGER conference_discounts_due_date_earlier_than_conference_start_date
+  ON conference_discounts
+  AFTER INSERT, UPDATE AS IF (SELECT due_date
+                              from inserted) > (SELECT c.start_date
+                                                FROM inserted
+                                                  JOIN conferences c ON inserted.conference_id = c.id)
+  BEGIN
+    RAISERROR ('Discount due date must be earlier than conference start date.', 16, 1);
+    ROLLBACK TRANSACTION;
+    RETURN
+  END;
 
 CREATE TABLE conference_days
 (
