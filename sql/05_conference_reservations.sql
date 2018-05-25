@@ -29,22 +29,3 @@ CREATE TABLE conference_attendees (
   CONSTRAINT fk_conference_attendees_person FOREIGN KEY (person_id) REFERENCES people,
   CONSTRAINT fk_conference_attendees_conference_reservation_detail FOREIGN KEY (conference_reservation_detail_id) REFERENCES conference_reservation_details,
 );
-
-CREATE TRIGGER conference_reservation_details_attendees_amount
-  ON conference_reservation_details
-  AFTER INSERT, UPDATE AS
-  IF ((SELECT c.maximum_attendee_capacity
-       FROM inserted
-         INNER JOIN conference_days cd
-           ON inserted.conference_day_id = cd.id
-         INNER JOIN conferences c ON cd.conference_id = c.id) < (SELECT SUM(crd.attendees_amount)
-                                                                 FROM inserted
-                                                                   INNER JOIN conference_reservation_details crd
-                                                                     ON crd.conference_day_id =
-                                                                        inserted.conference_day_id
-                                                                 GROUP BY crd.conference_day_id))
-    BEGIN
-      RAISERROR ('Attendees amount for this conference day was exceeded.', 16, 1);
-      ROLLBACK TRANSACTION;
-      RETURN
-    END;

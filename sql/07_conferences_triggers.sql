@@ -49,3 +49,22 @@ CREATE TRIGGER conference_start_end_dates_no_orphan_conference_day
     ROLLBACK TRANSACTION;
     RETURN
   END;
+
+CREATE TRIGGER conference_reservation_details_attendees_amount
+  ON conference_reservation_details
+  AFTER INSERT, UPDATE AS
+  IF ((SELECT c.maximum_attendee_capacity
+       FROM inserted
+         INNER JOIN conference_days cd
+           ON inserted.conference_day_id = cd.id
+         INNER JOIN conferences c ON cd.conference_id = c.id) < (SELECT SUM(crd.attendees_amount)
+                                                                 FROM inserted
+                                                                   INNER JOIN conference_reservation_details crd
+                                                                     ON crd.conference_day_id =
+                                                                        inserted.conference_day_id
+                                                                 GROUP BY crd.conference_day_id))
+    BEGIN
+      RAISERROR ('Attendees amount for this conference day was exceeded.', 16, 1);
+      ROLLBACK TRANSACTION;
+      RETURN
+    END;
