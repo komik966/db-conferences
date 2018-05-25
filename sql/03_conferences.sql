@@ -14,15 +14,6 @@ CREATE TABLE conferences (
   CONSTRAINT ck_conferences_student_discount CHECK (student_discount > 0 AND student_discount <= 1),
 );
 
-CREATE FUNCTION conference_start_date(@conference_id INT)
-  RETURNS DATETIME2(0)
-AS
-  BEGIN
-    RETURN (SELECT start_date
-            FROM conferences
-            WHERE id = @conference_id)
-  END
-
 CREATE TABLE conference_discounts
 (
   id            INT IDENTITY,
@@ -33,7 +24,7 @@ CREATE TABLE conference_discounts
   CONSTRAINT pk_conference_discounts PRIMARY KEY (id),
   CONSTRAINT fk_conference_discounts_conference FOREIGN KEY (conference_id) REFERENCES conferences,
   CONSTRAINT ck_conference_discounts_discount CHECK (discount > 0 AND discount <= 1),
-  CONSTRAINT ck_conference_discounts_due_date CHECK (due_date > CURRENT_TIMESTAMP and due_date < dbo.conference_start_date(conference_id)),
+  CONSTRAINT ck_conference_discounts_due_date CHECK (due_date > CURRENT_TIMESTAMP),
   CONSTRAINT uq_conference_discounts_due_date UNIQUE (conference_id, due_date)
 );
 
@@ -47,3 +38,27 @@ CREATE TABLE conference_days
   CONSTRAINT fk_conference_days_conference FOREIGN KEY (conference_id) REFERENCES conferences,
   -- TODO: date musi się mieścić w przedziale conferences.start_date -> conferences.end_date
 );
+
+CREATE TRIGGER conference_discounts_due_date_earlier_than_conference_start_date
+  ON conference_discounts
+  AFTER INSERT, UPDATE AS IF (SELECT due_date
+                              FROM inserted) > (SELECT c.start_date
+                                                FROM inserted
+                                                  JOIN conferences c ON inserted.conference_id = c.id)
+  BEGIN
+    RAISERROR ('Discount due date must be earlier than conference start date.', 16, 1);
+    ROLLBACK TRANSACTION;
+    RETURN
+  END;
+
+CREATE TRIGGER conference_start_date_later_than_conference_discounts_due_date
+  ON conferences
+  AFTER INSERT, UPDATE AS IF EXISTS(SELECT *
+                                    FROM inserted
+                                      INNER JOIN conference_discounts cd
+                                        ON inserted.id = cd.conference_id AND inserted.start_date < cd.due_date)
+  BEGIN
+    RAISERROR ('Conference start date must be later than its discounts due date.', 16, 1);
+    ROLLBACK TRANSACTION;
+    RETURN
+  END;
