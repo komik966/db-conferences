@@ -3,7 +3,7 @@ CREATE TABLE workshop_reservations (
   conference_reservation_detail_id INT          NOT NULL,
   -- TODO: workshop_day.(start/stop date) = conference_reservation_details.conference_day.date
   workshop_day_id                  INT          NOT NULL,
-  -- TODO: suma attendees_amount nie może być większa od workshop_days.maximum_attendee_capacity
+  -- TODO: suma attendees_amount nie może być większa od workshop_days.max_attendees
   attendees_amount                 INT          NOT NULL,
   reservation_date                 DATETIME2(0) NOT NULL CONSTRAINT df_workshop_reservations_reservation_date DEFAULT CURRENT_TIMESTAMP,
 

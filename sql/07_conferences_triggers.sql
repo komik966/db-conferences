@@ -53,7 +53,7 @@ CREATE TRIGGER conference_start_end_dates_no_orphan_conference_day
 CREATE TRIGGER conference_reservation_details_attendees_amount
   ON conference_reservation_details
   AFTER INSERT, UPDATE AS
-  IF ((SELECT c.maximum_attendee_capacity
+  IF ((SELECT c.max_attendees
        FROM inserted
          INNER JOIN conference_days cd
            ON inserted.conference_day_id = cd.id

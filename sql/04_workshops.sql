@@ -1,19 +1,19 @@
 CREATE TABLE workshops (
-  id                        INT IDENTITY,
-  name                      VARCHAR(64) NOT NULL,
-  maximum_attendee_capacity INT         NOT NULL,
+  id            INT IDENTITY,
+  name          VARCHAR(64) NOT NULL,
+  max_attendees INT         NOT NULL,
 
   CONSTRAINT pk_workshops PRIMARY KEY (id),
 );
 
 CREATE TABLE workshop_days (
-  id                        INT IDENTITY,
-  workshop_id               INT        NOT NULL,
-  conference_day_id         INT        NOT NULL,
-  start_time                TIME(0)    NOT NULL,
-  end_time                  TIME(0)    NOT NULL,
-  price                     SMALLMONEY NOT NULL,
-  maximum_attendee_capacity INT        NOT NULL,
+  id                INT IDENTITY,
+  workshop_id       INT        NOT NULL,
+  conference_day_id INT        NOT NULL,
+  start_time        TIME(0)    NOT NULL,
+  end_time          TIME(0)    NOT NULL,
+  price             SMALLMONEY NOT NULL,
+  max_attendees     INT        NOT NULL,
 
   CONSTRAINT pk_workshop_days PRIMARY KEY (id),
   CONSTRAINT fk_workshop_days_workshop FOREIGN KEY (workshop_id) REFERENCES workshops,
