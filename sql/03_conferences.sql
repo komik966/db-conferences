@@ -36,7 +36,7 @@ CREATE TABLE conference_days
 
   CONSTRAINT pk_conference_days PRIMARY KEY (id),
   CONSTRAINT fk_conference_days_conference FOREIGN KEY (conference_id) REFERENCES conferences,
-  -- TODO: date musi się mieścić w przedziale conferences.start_date -> conferences.end_date
+  CONSTRAINT uq_conference_days_date UNIQUE (conference_id, date)
 );
 
 CREATE TRIGGER conference_discounts_due_date_earlier_than_conference_start_date
@@ -53,12 +53,40 @@ CREATE TRIGGER conference_discounts_due_date_earlier_than_conference_start_date
 
 CREATE TRIGGER conference_start_date_later_than_conference_discounts_due_date
   ON conferences
-  AFTER INSERT, UPDATE AS IF EXISTS(SELECT *
+  AFTER UPDATE AS IF EXISTS(SELECT *
                                     FROM inserted
                                       INNER JOIN conference_discounts cd
                                         ON inserted.id = cd.conference_id AND inserted.start_date < cd.due_date)
   BEGIN
     RAISERROR ('Conference start date must be later than its discounts due date.', 16, 1);
+    ROLLBACK TRANSACTION;
+    RETURN
+  END;
+
+CREATE TRIGGER conference_day_date_between_conference_start_end_dates
+  ON conference_days
+  AFTER INSERT, UPDATE AS IF NOT EXISTS(SELECT *
+                                        FROM inserted
+                                          JOIN conferences c
+                                            ON inserted.conference_id = c.id AND
+                                               DATEADD(DAY, 1, inserted.date) > c.start_date AND
+                                               inserted.date < c.end_date)
+  BEGIN
+    RAISERROR ('Conference day date must be between conference start date and conference end date.', 16, 1);
+    ROLLBACK TRANSACTION;
+    RETURN
+  END;
+
+CREATE TRIGGER conference_start_end_dates_no_orphan_conference_day
+  ON conferences
+  AFTER UPDATE AS IF EXISTS(SELECT *
+                            FROM inserted
+                              INNER JOIN conference_days cd
+                                ON inserted.id = cd.conference_id AND
+                                   DATEADD(DAY, 1, cd.date) <= inserted.start_date OR
+                                   cd.date >= inserted.end_date)
+  BEGIN
+    RAISERROR ('Change to conference dates will leave orphaned conference days. Remove them first.', 16, 1);
     ROLLBACK TRANSACTION;
     RETURN
   END;
