@@ -1,3 +1,7 @@
+drop trigger conference_discounts_due_date_earlier_than_conference_start_date;
+drop trigger conference_start_date_later_than_conference_discounts_due_date;
+drop trigger conference_day_date_between_conference_start_end_dates;
+drop trigger conference_start_end_dates_no_orphan_conference_day;
 drop table workshop_attendees;
 drop table workshop_reservations;
 drop table conference_attendees;
