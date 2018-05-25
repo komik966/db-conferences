@@ -44,7 +44,7 @@ CREATE TRIGGER conference_reservation_details_attendees_amount
                                                                         inserted.conference_day_id
                                                                  GROUP BY crd.conference_day_id))
     BEGIN
-      RAISERROR ('Attendees amount for this conference was exceeded.', 16, 1);
+      RAISERROR ('Attendees amount for this conference day was exceeded.', 16, 1);
       ROLLBACK TRANSACTION;
       RETURN
     END;
