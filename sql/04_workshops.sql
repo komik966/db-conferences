@@ -21,5 +21,5 @@ CREATE TABLE workshop_days (
   CONSTRAINT fk_workshop_days_conference_day FOREIGN KEY (conference_day_id) REFERENCES conference_days,
   CONSTRAINT ck_workshop_days_end_time CHECK (end_time > start_time),
   CONSTRAINT ck_workshop_days_price CHECK (price > 0),
-  CONSTRAINT ck_workshop_max_attendees CHECK (max_attendees > 0),
+  CONSTRAINT ck_workshop_days_max_attendees CHECK (max_attendees > 0),
 );
