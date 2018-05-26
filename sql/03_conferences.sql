@@ -12,6 +12,8 @@ CREATE TABLE conferences (
   CONSTRAINT ck_conferences_start_date CHECK (start_date > CURRENT_TIMESTAMP),
   CONSTRAINT ck_conferences_end_date CHECK (end_date > start_date),
   CONSTRAINT ck_conferences_student_discount CHECK (student_discount > 0 AND student_discount <= 1),
+  CONSTRAINT ck_conferences_basic_price CHECK (basic_price > 0),
+  CONSTRAINT ck_conferences_max_attendees CHECK (max_attendees > 0),
 );
 
 CREATE TABLE conference_discounts
