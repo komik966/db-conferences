@@ -1,17 +1,17 @@
 CREATE TABLE conferences (
-  id               INT   IDENTITY,
+  id               INT                   IDENTITY,
   name             VARCHAR(64)  NOT NULL,
   description      VARCHAR(255) NOT NULL,
   start_date       DATETIME2(0) NOT NULL,
   end_date         DATETIME2(0) NOT NULL,
   basic_price      SMALLMONEY   NOT NULL,
-  student_discount FLOAT CONSTRAINT df_conferences_student_discount DEFAULT NULL,
+  student_discount FLOAT        NOT NULL CONSTRAINT df_conferences_student_discount DEFAULT 0,
   max_attendees    INT          NOT NULL,
 
   CONSTRAINT pk_conferences PRIMARY KEY (id),
   CONSTRAINT ck_conferences_start_date CHECK (start_date > CURRENT_TIMESTAMP),
   CONSTRAINT ck_conferences_end_date CHECK (end_date > start_date),
-  CONSTRAINT ck_conferences_student_discount CHECK (student_discount > 0 AND student_discount <= 1),
+  CONSTRAINT ck_conferences_student_discount CHECK (student_discount >= 0 AND student_discount <= 1),
   CONSTRAINT ck_conferences_basic_price CHECK (basic_price > 0),
   CONSTRAINT ck_conferences_max_attendees CHECK (max_attendees > 0),
 );
