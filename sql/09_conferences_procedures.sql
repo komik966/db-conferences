@@ -22,4 +22,12 @@ AS
                                 @conference_id,
                                 date
                               FROM dbo.date_range(@start_date, @end_date);
-GO
+GO;
+
+CREATE PROCEDURE create_conference_discount
+    @conference_id INT,
+    @due_date      DATETIME2,
+    @discount      FLOAT
+AS
+  INSERT INTO conference_discounts VALUES (@conference_id, @due_date, @discount)
+GO;

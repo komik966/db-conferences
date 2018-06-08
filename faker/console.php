@@ -43,6 +43,7 @@ class Loader
     public function load(): void
     {
         $this->loadConferences();
+        $this->loadConferenceDiscounts();
     }
 
     /**
@@ -51,7 +52,7 @@ class Loader
      */
     private function loadConferences(): void
     {
-        for ($i = 0; $i < 10; $i++) {
+        for ($i = 0; $i < 75; $i++) {
             $stmt = $this->conn->prepare(
                 'dbo.create_conference :name, :description, :start_date, :end_date, :basic_price, :student_discount, :max_attendees;'
             );
@@ -69,6 +70,34 @@ class Loader
                 'student_discount' => $this->faker->randomFloat(1, 0, 1),
                 'max_attendees' => $this->faker->numberBetween(20, 1500)
             ]);
+        }
+    }
+
+    /**
+     * @throws DBALException
+     * @throws Exception
+     */
+    private function loadConferenceDiscounts(): void
+    {
+        $conferences = $this->conn->executeQuery('select id, start_date from conferences')->fetchAll();
+        foreach ($conferences as $conference) {
+            $minStartDate = (new DateTime())->add(new DateInterval('PT24H'));
+            $maxDueDate = new DateTime($conference['start_date']);
+            $daysBetween = $maxDueDate->diff($minStartDate);
+            $maxDiscountCount = $daysBetween->days < 5 ? $daysBetween->days : 5;
+            $discountCount = $this->faker->numberBetween(0, $maxDiscountCount);
+            for ($i = 0; $i < $discountCount; $i++) {
+                $dueDate = clone $minStartDate;
+                $dueDate = $dueDate->add(new DateInterval('PT' . $i * 24 . 'H'));
+                $stmt = $this->conn->prepare(
+                    'dbo.create_conference_discount :conference_id, :due_date, :discount;'
+                );
+                $stmt->execute([
+                    'conference_id' => $conference['id'],
+                    'due_date' => $dueDate->format(self::DATETIME_FORMAT),
+                    'discount' => $this->faker->randomFloat(2, 0.01, 1)
+                ]);
+            }
         }
     }
 }
