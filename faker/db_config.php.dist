@@ -5,5 +5,5 @@ return [
     'password' => '',
     'host' => '',
     'port' => '',
-    'driver' => '',
+    'driver' => 'pdo_sqlsrv',
 ];
