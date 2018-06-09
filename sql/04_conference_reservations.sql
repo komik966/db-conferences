@@ -45,6 +45,8 @@ CREATE TABLE conference_attendees_students (
   student_card_id        INT NOT NULL,
 
   CONSTRAINT pk_conference_attendees_student PRIMARY KEY (conference_attendee_id),
+  CONSTRAINT uq_conference_attendees_students_conference_attendee UNIQUE (conference_attendee_id),
+  CONSTRAINT uq_conference_attendees_students_student_card_id UNIQUE (student_card_id),
   CONSTRAINT fk_conference_attendees_student_conference_attendee FOREIGN KEY (conference_attendee_id) REFERENCES conference_attendees,
   CONSTRAINT fk_conference_attendees_student_student_card FOREIGN KEY (student_card_id) REFERENCES student_cards,
 );
