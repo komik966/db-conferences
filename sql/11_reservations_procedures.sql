@@ -19,4 +19,12 @@ AS
   ROLLBACK;
   THROW;
   END CATCH;
+GO ;
+
+CREATE PROCEDURE add_conference_day_reservation
+    @conference_reservation_id INT,
+    @conference_day_id         INT,
+    @attendees_amount          INT
+AS
+  INSERT INTO conference_reservation_details VALUES (@conference_day_id, @conference_reservation_id, @attendees_amount)
 GO;
