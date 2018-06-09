@@ -68,3 +68,5 @@ CREATE TRIGGER conference_reservation_details_attendees_amount
       ROLLBACK TRANSACTION;
       RETURN
     END;
+
+-- TODO gdy reservation.payment_date not null - nie można dorezerwowywać do tej rezerwacji
