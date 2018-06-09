@@ -1,9 +1,7 @@
 CREATE TABLE workshop_reservations (
   id                               INT                   IDENTITY,
   conference_reservation_detail_id INT          NOT NULL,
-  -- TODO: workshop_day.(start/stop date) = conference_reservation_details.conference_day.date
   workshop_day_id                  INT          NOT NULL,
-  -- TODO: suma attendees_amount nie może być większa od workshop_days.max_attendees
   attendees_amount                 INT          NOT NULL,
 
   CONSTRAINT pk_workshop_reservations PRIMARY KEY (id),
@@ -14,7 +12,6 @@ CREATE TABLE workshop_reservations (
 
 CREATE TABLE workshop_attendees (
   id                      INT          IDENTITY,
-  -- ?TODO? sprawdzenie czy conference_attendee.conference pokrywa się workshop.conference
   conference_attendee_id  INT NOT NULL,
   workshop_reservation_id INT NOT NULL,
 
