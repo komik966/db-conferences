@@ -1,3 +1,10 @@
+CREATE TABLE people (
+  id          INT IDENTITY,
+  first_name  VARCHAR(255) NOT NULL,
+  second_name VARCHAR(255) NOT NULL,
+
+  CONSTRAINT pk_people PRIMARY KEY (id),
+);
 CREATE TABLE customers (
   id           INT IDENTITY,
   phone_number VARCHAR(32) NOT NULL,
