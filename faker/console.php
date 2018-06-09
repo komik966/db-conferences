@@ -47,6 +47,8 @@ class Loader
         $this->loadConferenceDiscounts();
         $this->loadWorkshops();
         $this->loadWorkshopDays();
+        $this->loadCompanyCustomers();
+        $this->loadIndividualCustomers();
     }
 
     /**
@@ -155,6 +157,40 @@ class Loader
                     'max_attendees' => $this->faker->numberBetween(10, 100)
                 ]);
             }
+        }
+    }
+
+    /**
+     * @throws DBALException
+     */
+    private function loadCompanyCustomers(): void
+    {
+        for ($i = 0; $i < 100; $i++) {
+            $stmt = $this->conn->prepare(
+                'dbo.create_company_customer :phone_number, :company_name, :nip;'
+            );
+            $stmt->execute([
+                'phone_number' => $this->faker->phoneNumber,
+                'company_name' => $this->faker->company,
+                'nip' => $this->faker->numerify('#######')
+            ]);
+        }
+    }
+
+    /**
+     * @throws DBALException
+     */
+    private function loadIndividualCustomers(): void
+    {
+        for ($i = 0; $i < 100; $i++) {
+            $stmt = $this->conn->prepare(
+                'dbo.create_individual_customer :phone_number, :first_name, :second_name;'
+            );
+            $stmt->execute([
+                'phone_number' => $this->faker->phoneNumber,
+                'first_name' => $this->faker->firstName,
+                'second_name' => $this->faker->lastName
+            ]);
         }
     }
 }
