@@ -12,6 +12,7 @@ $_ENV['DB_CONFIG'] = require './db_config.php';
 class Loader
 {
     private const DATETIME_FORMAT = 'Y-m-d H:i:s';
+    private const TIME_FORMAT = 'H:i:s';
 
     /**
      * @var Connection
@@ -45,6 +46,7 @@ class Loader
         $this->loadConferences();
         $this->loadConferenceDiscounts();
         $this->loadWorkshops();
+        $this->loadWorkshopDays();
     }
 
     /**
@@ -116,6 +118,43 @@ class Loader
                 'name' => $this->faker->sentence(1),
                 'max_attendees' => $this->faker->numberBetween(10, 100)
             ]);
+        }
+    }
+
+    /**
+     * @throws DBALException
+     * @throws Exception
+     */
+    private function loadWorkshopDays(): void
+    {
+        $conferenceDays = $this->conn->executeQuery('select id from conference_days')->fetchAll();
+        $workshops = $this->conn->executeQuery('select id from workshops')->fetchAll();
+        foreach ($conferenceDays as $conferenceDay) {
+            for ($i = 0; $i < $this->faker->numberBetween(0, 4); $i++) {
+                $startTime = $this->faker->dateTime;
+
+                $tmp = clone $startTime;
+                $tmp->add(new DateInterval('P1D'))->setTime(0, 0, 0, 0);
+                $diff = $tmp->diff($startTime);
+                if ($diff->i == 0) {
+                    continue;
+                }
+
+                $endTime = clone $startTime;
+                $endTime->add(new DateInterval('PT' . $this->faker->numberBetween(1, $diff->i) . 'M'));
+
+                $stmt = $this->conn->prepare(
+                    'dbo.create_workshop_day :workshop_id, :conference_day_id, :start_time, :end_time, :price, :max_attendees;'
+                );
+                $stmt->execute([
+                    'workshop_id' => $workshops[$this->faker->numberBetween(0, count($workshops) - 1)]['id'],
+                    'conference_day_id' => $conferenceDay['id'],
+                    'start_time' => $startTime->format(self::TIME_FORMAT),
+                    'end_time' => $endTime->format(self::TIME_FORMAT),
+                    'price' => $this->faker->numberBetween(20, 1500),
+                    'max_attendees' => $this->faker->numberBetween(10, 100)
+                ]);
+            }
         }
     }
 }

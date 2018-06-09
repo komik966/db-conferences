@@ -1,13 +1,3 @@
--- CREATE PROCEDURE create_workshop_day
---     @workshop_id   INT,
---     @conference_id INT,
---     @date          DATE,
---     @start_time    DATETIME2,
---     @end_time      DATETIME2,
---     @price         SMALLMONEY,
---     @max_attendees INT
---   -- find conference day and insert workshop day
-
 -- CREATE PROCEDURE create_company_customer
 --     @phone_number VARCHAR(32),
 --     @company_name         VARCHAR(255),
@@ -21,3 +11,6 @@
 
 -- CREATE PROCEDURE pay_for_reservation
   -- insert current date to payment_date
+
+-- create reservation
+-- delete not paid reservations
