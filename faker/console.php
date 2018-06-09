@@ -44,6 +44,7 @@ class Loader
     {
         $this->loadConferences();
         $this->loadConferenceDiscounts();
+        $this->loadWorkshops();
     }
 
     /**
@@ -98,6 +99,23 @@ class Loader
                     'discount' => $this->faker->randomFloat(2, 0.01, 1)
                 ]);
             }
+        }
+    }
+
+    /**
+     * @throws DBALException
+     */
+    private function loadWorkshops(): void
+    {
+        for ($i = 0; $i < 150; $i++) {
+            $stmt = $this->conn->prepare(
+                'dbo.create_workshop :name, :max_attendees;'
+            );
+
+            $stmt->execute([
+                'name' => $this->faker->sentence(1),
+                'max_attendees' => $this->faker->numberBetween(10, 100)
+            ]);
         }
     }
 }

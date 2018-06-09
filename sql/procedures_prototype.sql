@@ -1,8 +1,3 @@
--- CREATE PROCEDURE create_workshop
---     @name          VARCHAR(64),
---     @max_attendees INT
--- -- insert workshop
-
 -- CREATE PROCEDURE create_workshop_day
 --     @workshop_id   INT,
 --     @conference_id INT,
