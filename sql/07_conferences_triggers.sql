@@ -71,3 +71,4 @@ CREATE TRIGGER conference_reservation_details_attendees_amount
 
 -- TODO gdy reservation.payment_date not null - nie można dorezerwowywać do tej rezerwacji
 -- TODO sprawdzać czy conference_attendees_students.conference_attendee_id.conference_reservation_detail_id = student_cards.conference_reservation_detail_id
+-- TODO student_cards.count by conference_reservation_detail_id <= conference_reservation_detais.attendeesAmount
