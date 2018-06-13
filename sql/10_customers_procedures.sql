@@ -8,8 +8,7 @@ AS
   BEGIN TRY
 
   INSERT INTO customers VALUES (@phone_number);
-  DECLARE @customer_id INT;
-  SET @customer_id = SCOPE_IDENTITY();
+  DECLARE @customer_id INT = SCOPE_IDENTITY();
   INSERT INTO companies VALUES (@customer_id, @company_name, @nip);
 
   COMMIT;
@@ -31,10 +30,9 @@ AS
   BEGIN TRY
 
   INSERT INTO customers VALUES (@phone_number);
-  DECLARE @customer_id INT, @person_id INT;
-  SET @customer_id = SCOPE_IDENTITY();
+  DECLARE @customer_id INT = SCOPE_IDENTITY();
   INSERT INTO people VALUES (@first_name, @second_name);
-  SET @person_id = SCOPE_IDENTITY();
+  DECLARE @person_id INT = SCOPE_IDENTITY();
   INSERT INTO customer_individual VALUES (@customer_id, @person_id);
 
   COMMIT;
