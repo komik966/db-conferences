@@ -1,9 +1,9 @@
 # Spis treści
-- [Tabele](#Tabele)
-    - [people](##people)
-    - [customers](##customers)
-    - [customer_individual](##customer_individual)
-    - [companies](##companies)
+- [Tabele](#tabele)
+    - [people](#people)
+    - [customers](#customers)
+    - [customer_individual](#customer_individual)
+    - [companies](#companies)
 
 # Tabele
 
