@@ -2,6 +2,7 @@ drop procedure add_workshop_attendee;
 drop procedure add_workshop_day_reservation;
 drop procedure add_conference_attendee_student;
 drop procedure add_conference_attendee;
+drop type StudentCardNumbers;
 drop procedure add_conference_day_reservation;
 drop procedure create_reservation;
 drop procedure check_conference_day_attendees_amount;
