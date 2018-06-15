@@ -1,0 +1,12 @@
+-- CREATE PROCEDURE throw_if_conference_reservation_detail_attendees_amount_will_exceed
+--     @conference_reservation_detail_id INT AS
+--   DECLARE @allowed_total INT = (SELECT attendees_amount
+--                                 FROM conference_reservation_details
+--                                 WHERE id = @conference_reservation_detail_id)
+--   DECLARE @allowed_student INT = (SELECT COUNT(*)
+--                                   FROM student_cards
+--                                   WHERE conference_reservation_detail_id = @conference_reservation_detail_id
+--                                   GROUP BY conference_reservation_detail_id)
+--   DECLARE @allowed_non_student INT = @allowed_total - @allowed_student
+--   IF (SELECT COUNT(*)
+--       FROM conference_attendees

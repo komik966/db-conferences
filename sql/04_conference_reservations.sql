@@ -28,6 +28,7 @@ CREATE TABLE student_cards (
 
   CONSTRAINT pk_student_card PRIMARY KEY (id),
   CONSTRAINT fk_student_card_conference_reservation_detail FOREIGN KEY (conference_reservation_detail_id) REFERENCES conference_reservation_details,
+  CONSTRAINT uq_student_card_number UNIQUE (conference_reservation_detail_id, number),
 );
 
 CREATE TABLE conference_attendees (
@@ -38,6 +39,7 @@ CREATE TABLE conference_attendees (
   CONSTRAINT pk_conference_attendees PRIMARY KEY (id),
   CONSTRAINT fk_conference_attendees_person FOREIGN KEY (person_id) REFERENCES people,
   CONSTRAINT fk_conference_attendees_conference_reservation_detail FOREIGN KEY (conference_reservation_detail_id) REFERENCES conference_reservation_details,
+  CONSTRAINT uq_conference_attendees_person_reservation_detail UNIQUE (person_id, conference_reservation_detail_id)
 );
 
 CREATE TABLE conference_attendees_students (
