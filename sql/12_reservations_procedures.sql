@@ -43,6 +43,12 @@ CREATE PROCEDURE add_workshop_day_reservation
     @workshop_day_id                  INT,
     @attendees_amount                 INT
 AS
+  DECLARE @conference_reservation_id INT = (SELECT cr.id
+                                            FROM
+                                              conference_reservations cr INNER JOIN conference_reservation_details crd
+                                                ON cr.id = crd.conference_reservation_id AND
+                                                   crd.id = @conference_reservation_detail_id);
+  EXEC dbo.throw_if_reservation_is_paid @conference_reservation_id
   IF @attendees_amount > (SELECT attendees_amount
                           FROM conference_reservation_details
                           WHERE id = @conference_reservation_detail_id)
