@@ -42,4 +42,4 @@ AS
     THROW 50001, 'Discount due date must be earlier than conference start date.', 0
 
   INSERT INTO conference_discounts VALUES (@conference_id, @due_date, @discount)
-GO;
+GO
