@@ -14,6 +14,8 @@
     - [create_company_customer](#procedura-create-company-customer)
     - [create_individual_customer](#procedura-create-individual-customer)
     - [throw_if_conference_attendees_amount_will_exceed](#procedura-throw-if-conference-attendees-amount-will-exceed)
+    - [throw_if_workshop_attendees_amount_will_exceed](#procedura-throw-if-workshop-attendees-amount-will-exceed)
+    - [throw_if_reservation_is_paid](#procedura-throw-if-reservation-is-paid)
 
 # Tabele
 ## tabela conferences
@@ -298,7 +300,7 @@ AS
 
   IF (@attendees_amount_to_check > @max_reservation_allowed)
     BEGIN
-      DECLARE @msg NVARCHAR(2048) = FORMATMESSAGE('For this conference leaved only %d places.',
+      DECLARE @msg NVARCHAR(2048) = FORMATMESSAGE('For this conference day leaved only %d places.',
                                                   @max_reservation_allowed);
       THROW 50001, @msg, 0
     END;
@@ -308,3 +310,49 @@ GO
 Procedura pomocnicza. Wyrzuca błąd jeśl dodanie podanej liczby uczestników spowodowałoby
 przekroczenie limitu uczestników dla dnia konferencji. Procedura korzysta z
 [widoku conference_day_max_attendees](#widok-conference-day-max-attendees)
+
+## procedura throw if workshop attendees amount will exceed
+### Kod
+```sql
+CREATE PROCEDURE throw_if_workshop_attendees_amount_will_exceed
+    @workshop_day_id           INT,
+    @attendees_amount_to_check INT
+AS
+  DECLARE @max_attendees INT, @actual INT, @max_reservation_allowed INT
+
+  SET @max_attendees = (SELECT COALESCE((SELECT max_attendees
+                                         FROM workshop_days
+                                         WHERE id = @workshop_day_id), 0));
+
+  SET @actual = (SELECT COALESCE((SELECT SUM(attendees_amount)
+                                  FROM workshop_reservations
+                                  WHERE workshop_day_id = @workshop_day_id
+                                  GROUP BY workshop_day_id), 0));
+
+  SET @max_reservation_allowed = @max_attendees - @actual;
+
+  IF (@attendees_amount_to_check > @max_reservation_allowed)
+    BEGIN
+      DECLARE @msg NVARCHAR(2048) = FORMATMESSAGE('For this workshop day leaved only %d places.',
+                                                  @max_reservation_allowed);
+      THROW 50001, @msg, 0
+    END;
+GO
+```
+### Opis
+Procedura pomocnicza. Wyrzuca błąd jeśl dodanie podanej liczby uczestników spowodowałoby
+przekroczenie limitu uczestników dla warsztatu.
+
+## procedura throw if reservation is paid
+### Kod
+```sql
+CREATE PROCEDURE throw_if_reservation_is_paid @conference_reservation_id INT AS
+  IF (SELECT payment_date
+      FROM conference_reservations
+      WHERE id = @conference_reservation_id) IS NOT NULL
+    THROW 50001, 'Cannot modify reservation which is paid.', 0
+GO
+```
+### Opis
+Procedura pomocnicza. Wyrzuca błąd gdy rezerwacja została opłacona.
+

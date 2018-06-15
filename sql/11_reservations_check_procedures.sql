@@ -29,9 +29,9 @@ CREATE PROCEDURE throw_if_workshop_attendees_amount_will_exceed
 AS
   DECLARE @max_attendees INT, @actual INT, @max_reservation_allowed INT
 
-  SET @max_attendees = (SELECT max_attendees
-                        FROM workshop_days
-                        WHERE id = @workshop_day_id);
+  SET @max_attendees = (SELECT COALESCE((SELECT max_attendees
+                                         FROM workshop_days
+                                         WHERE id = @workshop_day_id), 0));
 
   SET @actual = (SELECT COALESCE((SELECT SUM(attendees_amount)
                                   FROM workshop_reservations

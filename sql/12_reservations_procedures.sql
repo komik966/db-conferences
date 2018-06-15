@@ -58,3 +58,11 @@ AS
 
   INSERT INTO workshop_reservations VALUES (@conference_reservation_detail_id, @workshop_day_id, @attendees_amount)
 GO
+
+CREATE PROCEDURE pay_for_reservation
+    @conference_reservation_id INT
+AS
+  UPDATE conference_reservations
+  SET payment_date = CURRENT_TIMESTAMP
+  WHERE id = @conference_reservation_id
+GO
