@@ -17,7 +17,7 @@ AS
 
   IF (@attendees_amount_to_check > @max_reservation_allowed)
     BEGIN
-      DECLARE @msg NVARCHAR(2048) = FORMATMESSAGE('For this conference leaved only %d places.',
+      DECLARE @msg NVARCHAR(2048) = FORMATMESSAGE('For this conference day leaved only %d places.',
                                                   @max_reservation_allowed);
       THROW 50001, @msg, 0
     END;

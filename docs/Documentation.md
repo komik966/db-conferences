@@ -4,6 +4,8 @@
     - [conference_days](#tabela-conference-days)
 - [Funkcje](#funkcje)
     - [date_range](#funkcja-date-range)
+- [Widoki](#widoki)
+    - [conference_day_max_attendees](#widok-conference-day-max-attendees)
 - [Procedury](#procedury)
     - [create_conference](#procedura-create-conference)
     - [create_conference_discount](#procedura-create-conference-discount)
@@ -11,6 +13,7 @@
     - [create_workshop_day](#procedura-create-workshop-day)
     - [create_company_customer](#procedura-create-company-customer)
     - [create_individual_customer](#procedura-create-individual-customer)
+    - [throw_if_conference_attendees_amount_will_exceed](#procedura-throw-if-conference-attendees-amount-will-exceed)
 
 # Tabele
 ## tabela conferences
@@ -71,11 +74,24 @@ CREATE FUNCTION dbo.date_range(@start_date DATE, @end_date DATE)
 Jest to funkcja pomocnicza służąca do wygenerowania zbioru dni pomiędzy dwoma datami.
 Wykorzystywana w [procedurze create_conference](#procedura-create-conference) 
 
-# Procedury
+# Widoki
+## widok conference day max attendees
+### Kod
+```sql
+CREATE VIEW conference_day_max_attendees AS
+  SELECT
+    cd.id conference_day_id,
+    c.max_attendees
+  FROM conference_days cd INNER JOIN conferences c on cd.conference_id = c.id;
+```
+### Opis
+Widok pomocniczy, pokazuje wartość max_attendees konferencji dla każdego dnia konferencji.
+Używany w [procedurze throw_if_conference_attendees_amount_will_exceed](#procedura-throw-if-conference-attendees-amount-will-exceed)
 
+# Procedury
 ## procedura create conference
 ### Kod
-``` sql
+```sql
 CREATE PROCEDURE create_conference
     @name             VARCHAR(64),
     @description      VARCHAR(255),
@@ -252,7 +268,43 @@ AS
   END CATCH;
 GO
 ```
+### Opis
+W procedurze znajduje się transakcja aby nie tworzyły się osierocone rekordy w przypadku
+awarii systemu lub niespełnienia warunków integralnościowych (częstszy przypadek).
 ### Przykład
 ```sql
 dbo.create_individual_customer '1234', 'Jan', 'Kowalski';
 ```
+
+## procedura throw if conference attendees amount will exceed
+### Kod
+```sql
+CREATE PROCEDURE throw_if_conference_attendees_amount_will_exceed
+    @conference_day_id         INT,
+    @attendees_amount_to_check INT
+AS
+  DECLARE @max_attendees INT, @actual INT, @max_reservation_allowed INT
+
+  SET @max_attendees = (SELECT COALESCE((SELECT max_attendees
+                                         FROM conference_day_max_attendees
+                                         WHERE conference_day_id = @conference_day_id), 0));
+
+  SET @actual = (SELECT COALESCE((SELECT SUM(attendees_amount)
+                                  FROM conference_reservation_details
+                                  WHERE conference_day_id = @conference_day_id
+                                  GROUP BY conference_day_id), 0));
+
+  SET @max_reservation_allowed = @max_attendees - @actual;
+
+  IF (@attendees_amount_to_check > @max_reservation_allowed)
+    BEGIN
+      DECLARE @msg NVARCHAR(2048) = FORMATMESSAGE('For this conference leaved only %d places.',
+                                                  @max_reservation_allowed);
+      THROW 50001, @msg, 0
+    END;
+GO
+```
+### Opis
+Procedura pomocnicza. Wyrzuca błąd jeśl dodanie podanej liczby uczestników spowodowałoby
+przekroczenie limitu uczestników dla dnia konferencji. Procedura korzysta z
+[widoku conference_day_max_attendees](#widok-conference-day-max-attendees)
