@@ -1,4 +1,3 @@
--- should_fill_attendees_data
 -- too_late_for_payment
 -- conference_day_attendees
 -- workshop_day_attendees

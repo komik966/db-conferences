@@ -20,13 +20,6 @@ AS
   END CATCH;
 GO
 
-CREATE PROCEDURE add_conference_attendee_by_person_id
-    @conference_reservation_detail_id INT,
-    @person_id                        INT
-AS
-  INSERT INTO conference_attendees VALUES (@person_id, @conference_reservation_detail_id);
-GO
-
 CREATE PROCEDURE add_conference_attendee_student
     @conference_reservation_detail_id INT,
     @first_name                       VARCHAR(255),

@@ -458,4 +458,8 @@ Procedura wyrzuci błąd:
 - gdy podana liczba uczestników jest większa niż zarezerwowana na dzień konferencji
 - gdy podana liczba uczestników jest większa niż liczba dostępnych miejsc
 - gdy podany dzień warsztatu jest przypisany do innego dnia konferencji niż podana rezerwacja
+### Przykład
+```sql
+dbo.add_workshop_day_reservation 1, 1, 10;
+```
 
