@@ -1,7 +1,71 @@
 # Spis treści
+- [Tabele](#tabele)
+    - [conferences](#tabela-conferences)
+    - [conference_days](#tabela-conference-days)
+- [Funkcje](#funkcje)
+    - [date_range](#funkcja-date-range)
 - [Procedury](#procedury)
     - [create_conference](#procedura-create-conference)
     - [create_conference_discount](#procedura-create-conference-discount)
+
+# Tabele
+## tabela conferences
+### Kod
+```sql
+CREATE TABLE conferences (
+  id               INT                   IDENTITY,
+  name             VARCHAR(64)  NOT NULL,
+  description      VARCHAR(255) NOT NULL,
+  start_date       DATETIME2(0) NOT NULL,
+  end_date         DATETIME2(0) NOT NULL,
+  basic_price      SMALLMONEY   NOT NULL,
+  student_discount FLOAT        NOT NULL CONSTRAINT df_conferences_student_discount DEFAULT 0,
+  max_attendees    INT          NOT NULL,
+
+  CONSTRAINT pk_conferences PRIMARY KEY (id),
+  CONSTRAINT ck_conferences_start_date CHECK (start_date > CURRENT_TIMESTAMP),
+  CONSTRAINT ck_conferences_end_date CHECK (end_date > start_date),
+  CONSTRAINT ck_conferences_student_discount CHECK (student_discount >= 0 AND student_discount <= 1),
+  CONSTRAINT ck_conferences_basic_price CHECK (basic_price > 0),
+  CONSTRAINT ck_conferences_max_attendees CHECK (max_attendees > 0),
+);
+```
+
+## tabela conference days
+### Kod
+```sql
+CREATE TABLE conference_days
+(
+  id            INT IDENTITY,
+  conference_id INT  NOT NULL,
+  date          DATE NOT NULL,
+
+  CONSTRAINT pk_conference_days PRIMARY KEY (id),
+  CONSTRAINT fk_conference_days_conference FOREIGN KEY (conference_id) REFERENCES conferences,
+  CONSTRAINT uq_conference_days_date UNIQUE (conference_id, date)
+)
+```
+
+# Funkcje
+## funkcja date range
+### Kod
+```sql
+CREATE FUNCTION dbo.date_range(@start_date DATE, @end_date DATE)
+  RETURNS TABLE AS RETURN
+  (
+  WITH date_range
+  AS (SELECT @start_date AS date
+      UNION ALL
+      SELECT DATEADD(DAY, 1, date)
+      FROM date_range
+      WHERE DATEADD(DAY, 1, date) <= @end_date)
+  SELECT date
+  FROM date_range
+  );
+```
+### Opis
+Jest to funkcja pomocnicza służąca do wygenerowania zbioru dni pomiędzy dwoma datami.
+Wykorzystywana w [procedurze create_conference](#procedura-create-conference) 
 
 # Procedury
 
@@ -33,6 +97,9 @@ AS
                               FROM dbo.date_range(@start_date, @end_date);
 GO
 ```
+### Opis
+Procedura poza dodaniem wpisu do [tabeli conferences](#tabela-conferences) generuje także dni
+do [tabeli conference_days](#tabela-conference-days) korzystając z [funkcji date_range](#funkcja-date-range)
 ### Przykład
 *Stwórz trzydniową konferencję z ceną bazową 100zł, bez zniżki studenckiej z liczbą miejsc 200*
 ```sql
@@ -69,6 +136,7 @@ Procedura wyrzuci błąd:
 - przy próbie zapisu zniżki z wartością większą niż wartość innej zniżki z datą późniejszą
 - przy próbie zapisu zniżki z wartością mniejszą niż wartość innej zniżki z datą wcześniejszą
 ### Przykład
+*Stwórz zniżkę 20% obowiązującą do 2019-06-15 10:00:00 dla konferencji o id = 1*
 ```sql
 dbo.create_conference_discount 1, '2019-06-15 10:00:00', 0.2
 ```
