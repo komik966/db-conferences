@@ -7,6 +7,7 @@
 - [Procedury](#procedury)
     - [create_conference](#procedura-create-conference)
     - [create_conference_discount](#procedura-create-conference-discount)
+    - [create_workshop](#procedura-create-workshop)
 
 # Tabele
 ## tabela conferences
@@ -141,3 +142,49 @@ Procedura wyrzuci błąd:
 dbo.create_conference_discount 1, '2019-06-15 10:00:00', 0.2
 ```
 
+## procedura create workshop
+### Kod
+```sql
+CREATE PROCEDURE create_workshop
+    @name          VARCHAR(64),
+    @max_attendees INT
+AS
+  INSERT INTO workshops VALUES (@name, @max_attendees)
+GO
+```
+### Opis
+Dodaje warsztat do słownika warsztatów oferowanych przez firmę.
+Do tworzenia konkretnego wydarzenia służy [procedura create_workshop_day](#procedura-create-workshop-day). 
+### Przykład
+```sql
+dbo.create_workshop 'Foo', 100;
+```
+
+## procedura create workshop day
+### Kod
+```sql
+CREATE PROCEDURE create_workshop_day
+    @workshop_id       INT,
+    @conference_day_id INT,
+    @start_time        TIME,
+    @end_time          TIME,
+    @price             SMALLMONEY,
+    @max_attendees     INT
+AS
+  IF (SELECT max_attendees
+      FROM conference_day_max_attendees
+      WHERE conference_day_id = @conference_day_id) < @max_attendees
+    THROW 50001, 'Workshop day max_attendees cannot be higher than conference max_attendees.', 0
+
+  INSERT INTO workshop_days VALUES (@workshop_id, @conference_day_id, @start_time, @end_time, @price, @max_attendees)
+GO
+```
+### Wyrzucane błędy
+Procedura wyrzuca błąd przy próbie utworzenia warsztatu z liczbą miejsc większą niż
+liczba miejsc konferencji, do której warsztat jest przypisywany.
+
+### Przykład
+*Stwórz 30-minutowy, darmowy warsztat dla 50 osób*
+```sql
+dbo.create_workshop_day 1, 1, '11:00:00', '11:30:00', 0, 50;
+```
