@@ -8,6 +8,9 @@
     - [create_conference](#procedura-create-conference)
     - [create_conference_discount](#procedura-create-conference-discount)
     - [create_workshop](#procedura-create-workshop)
+    - [create_workshop_day](#procedura-create-workshop-day)
+    - [create_company_customer](#procedura-create-company-customer)
+    - [create_individual_customer](#procedura-create-individual-customer)
 
 # Tabele
 ## tabela conferences
@@ -187,4 +190,69 @@ liczba miejsc konferencji, do której warsztat jest przypisywany.
 *Stwórz 30-minutowy, darmowy warsztat dla 50 osób*
 ```sql
 dbo.create_workshop_day 1, 1, '11:00:00', '11:30:00', 0, 50;
+```
+
+## procedura create company customer
+### Kod
+```sql
+CREATE PROCEDURE create_company_customer
+    @phone_number VARCHAR(32),
+    @company_name VARCHAR(255),
+    @nip          VARCHAR(32)
+AS
+  BEGIN TRANSACTION
+
+  BEGIN TRY
+
+  INSERT INTO customers VALUES (@phone_number);
+  DECLARE @customer_id INT = SCOPE_IDENTITY();
+  INSERT INTO companies VALUES (@customer_id, @company_name, @nip);
+
+  COMMIT;
+  END TRY
+
+  BEGIN CATCH
+  ROLLBACK;
+  THROW;
+  END CATCH;
+GO
+```
+### Opis
+W procedurze znajduje się transakcja aby nie tworzyły się osierocone rekordy w przypadku
+awarii systemu lub niespełnienia warunków integralnościowych (częstszy przypadek). 
+### Przykład
+```sql
+dbo.create_company_customer '123', 'ACME', '123';
+```
+
+## procedura create individual customer
+### Kod
+```sql
+CREATE PROCEDURE create_individual_customer
+    @phone_number VARCHAR(32),
+    @first_name   VARCHAR(255),
+    @second_name  VARCHAR(255)
+AS
+  BEGIN TRANSACTION
+
+  BEGIN TRY
+
+  INSERT INTO customers VALUES (@phone_number);
+  DECLARE @customer_id INT = SCOPE_IDENTITY();
+  INSERT INTO people VALUES (@first_name, @second_name);
+  DECLARE @person_id INT = SCOPE_IDENTITY();
+  INSERT INTO customer_individual VALUES (@customer_id, @person_id);
+
+  COMMIT;
+  END TRY
+
+  BEGIN CATCH
+  ROLLBACK;
+  THROW;
+  END CATCH;
+GO
+```
+### Przykład
+```sql
+dbo.create_individual_customer '1234', 'Jan', 'Kowalski';
 ```

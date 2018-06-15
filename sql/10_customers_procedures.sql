@@ -18,7 +18,7 @@ AS
   ROLLBACK;
   THROW;
   END CATCH;
-GO ;
+GO
 
 CREATE PROCEDURE create_individual_customer
     @phone_number VARCHAR(32),
@@ -42,4 +42,4 @@ AS
   ROLLBACK;
   THROW;
   END CATCH;
-GO;
+GO
