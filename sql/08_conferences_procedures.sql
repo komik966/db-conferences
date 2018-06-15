@@ -21,7 +21,7 @@ AS
                                 @conference_id,
                                 date
                               FROM dbo.date_range(@start_date, @end_date);
-GO;
+GO
 
 CREATE PROCEDURE create_conference_discount
     @conference_id INT,

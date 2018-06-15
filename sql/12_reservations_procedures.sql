@@ -3,7 +3,7 @@ CREATE TYPE StudentCardNumbers AS TABLE(number VARCHAR(32)) GO
 CREATE PROCEDURE add_conference_day_reservation
     @conference_day_id         INT,
     @attendees_amount          INT,
-    @student_card_numbers      StudentCardNumbers,
+    @student_card_numbers      StudentCardNumbers READONLY,
     @conference_reservation_id INT = null,
     @customer_id               INT = null
 AS
@@ -19,7 +19,7 @@ AS
 
   IF @conference_reservation_id IS NULL
     BEGIN
-      INSERT INTO conference_reservations (customer_id) VALUES @customer_id
+      INSERT INTO conference_reservations (customer_id) VALUES (@customer_id)
       SET @conference_reservation_id = SCOPE_IDENTITY();
     END
   INSERT INTO conference_reservation_details VALUES (@conference_day_id, @conference_reservation_id, @attendees_amount)
