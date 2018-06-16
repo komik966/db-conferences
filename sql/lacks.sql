@@ -1,0 +1,7 @@
+-- Views:
+-- conference_day_attendees
+-- workshop_day_attendees
+-- invoices
+-- most_active_customers
+-- Inktegrity checks:
+-- the same person cannot reserve workshops which take place in parallel

@@ -39,6 +39,10 @@
     - [throw_if_reservation_is_paid](#procedura-throw-if-reservation-is-paid)
     - [add_conference_day_reservation](#procedura-add-conference-day-reservation)
     - [add_workshop_day_reservation](#procedura-add-workshop-day-reservation)
+    - [pay_for_reservation](#procedura-pay-for-reservation)
+    - [delete_conference_reservations_too_late_for_payment](#procedura-delete-conference-reservations-too-late-for-payment)
+    - [add_conference_attendee](#procedura-add-conference-attendee)
+    - [add_conference_attendee_student](#procedura-add-conference-attendee-student)
 
 # Tabele
 ## tabela people
@@ -802,4 +806,103 @@ Procedura wyrzuci błąd:
 ```sql
 dbo.add_workshop_day_reservation 1, 1, 10;
 ```
+## procedura pay for reservation
+### Kod
+```sql
+CREATE PROCEDURE pay_for_reservation
+    @conference_reservation_id INT
+AS
+  UPDATE conference_reservations
+  SET payment_date = CURRENT_TIMESTAMP
+  WHERE id = @conference_reservation_id
+GO
+```
+### Opis
+Dodaje aktualną datę jako data płatności.
+
+## procedura delete conference reservations too late for payment
+### Kod
+```sql
+CREATE PROCEDURE delete_conference_reservations_too_late_for_payment AS
+  DELETE FROM conference_reservations
+  WHERE id IN (SELECT id
+               FROM conference_reservations_too_late_for_payment);
+GO
+```
+### Opis
+Usuwa rezerwacje nieopłacone dłużej niż tydzień.
+
+## procedura add conference attendee
+### Kod
+```sql
+CREATE PROCEDURE add_conference_attendee
+    @conference_reservation_detail_id INT,
+    @first_name                       VARCHAR(255),
+    @second_name                      VARCHAR(255)
+AS
+  IF (SELECT non_student_count
+      FROM not_filled_conference_attendees_count
+      WHERE conference_reservation_detail_id = @conference_reservation_detail_id) = 0
+    THROW 50001, 'All non student attendees data was provided for this reservation.', 0;
+  BEGIN TRANSACTION
+
+  BEGIN TRY
+
+  INSERT INTO people VALUES (@first_name, @second_name);
+  DECLARE @person_id INT = SCOPE_IDENTITY();
+  INSERT INTO conference_attendees VALUES (@person_id, @conference_reservation_detail_id);
+
+  COMMIT;
+  END TRY
+
+  BEGIN CATCH
+  ROLLBACK;
+  THROW;
+  END CATCH;
+GO
+```
+### Wyrzucane błędy
+Procedura wyrzuci błąd gdy suma podanych uczestników (nie studentów) będzie większa niż
+liczba podana w rezerwacji.
+
+## procedura add conference attendee student
+### Kod
+```sql
+CREATE PROCEDURE add_conference_attendee_student
+    @conference_reservation_detail_id INT,
+    @first_name                       VARCHAR(255),
+    @second_name                      VARCHAR(255),
+    @student_card_id                  INT
+AS
+  IF (SELECT student_count
+      FROM not_filled_conference_attendees_count
+      WHERE conference_reservation_detail_id = @conference_reservation_detail_id) = 0
+    THROW 50001, 'All student attendees data was provided for this reservation.', 0;
+  IF (SELECT conference_reservation_detail_id
+      FROM student_cards
+      WHERE id = @student_card_id) != @conference_reservation_detail_id
+    THROW 50001, 'Attendee conference reservation detail must be the same as in student card.', 0;
+
+  BEGIN TRANSACTION
+
+  BEGIN TRY
+  INSERT INTO people VALUES (@first_name, @second_name);
+  DECLARE @person_id INT = SCOPE_IDENTITY();
+  INSERT INTO conference_attendees VALUES (@person_id, @conference_reservation_detail_id);
+  DECLARE @conference_attendee_id INT = SCOPE_IDENTITY();
+  INSERT INTO conference_attendees_students VALUES (@conference_attendee_id, @student_card_id);
+  COMMIT;
+  END TRY
+
+  BEGIN CATCH
+  ROLLBACK;
+  THROW;
+  END CATCH;
+GO
+```
+### Wyrzucane błędy
+Procedura wyrzuci błąd
+- gdy suma podanych uczestników (studentów) będzie większa niż liczba
+legitymacji podanych w rezerwacji
+- gdy zostanie wprowadzona legitymacja podana w innej rezerwacji
 
