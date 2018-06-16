@@ -72,3 +72,9 @@ AS
   SET payment_date = CURRENT_TIMESTAMP
   WHERE id = @conference_reservation_id
 GO
+
+CREATE PROCEDURE delete_conference_reservations_too_late_for_payment AS
+  DELETE FROM conference_reservations
+  WHERE id IN (SELECT id
+               FROM conference_reservations_too_late_for_payment);
+GO

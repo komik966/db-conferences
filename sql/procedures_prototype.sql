@@ -1,2 +1,1 @@
 -- add attendees
--- delete not paid reservations

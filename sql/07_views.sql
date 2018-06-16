@@ -53,5 +53,9 @@ CREATE VIEW should_phone_for_conference_attendees_data AS
     INNER JOIN conferences c2 on cd.conference_id = c2.id
   WHERE c2.start_date > CURRENT_TIMESTAMP AND
         c2.start_date < DATEADD(WEEK, 2, CURRENT_TIMESTAMP)
-        AND student_and_non_student_count > 0
-  ORDER BY phone_number;
+        AND student_and_non_student_count > 0;
+
+CREATE VIEW conference_reservations_too_late_for_payment AS
+  SELECT *
+  FROM conference_reservations
+  WHERE DATEADD(WEEK, 1, reservation_date) < CURRENT_TIMESTAMP AND payment_date IS NULL
