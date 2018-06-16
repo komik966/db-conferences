@@ -50,6 +50,7 @@ Autorzy:
     - [delete_conference_reservations_too_late_for_payment](#procedura-delete-conference-reservations-too-late-for-payment)
     - [add_conference_attendee](#procedura-add-conference-attendee)
     - [add_conference_attendee_student](#procedura-add-conference-attendee-student)
+    - [add_workshop_attendee](#procedura-add-workshop-attendee)
 
 # Tabele
 ## tabela people
@@ -908,8 +909,34 @@ AS
 GO
 ```
 ### Wyrzucane błędy
-Procedura wyrzuci błąd
+Procedura wyrzuci błąd:
 - gdy suma podanych uczestników (studentów) będzie większa niż liczba
 legitymacji podanych w rezerwacji
 - gdy zostanie wprowadzona legitymacja podana w innej rezerwacji
+
+## procedura add workshop attendee
+### Kod
+```sql
+CREATE PROCEDURE add_workshop_attendee
+    @conference_attendee_id  INT,
+    @workshop_reservation_id INT
+AS
+  IF (SELECT attendees_count
+      FROM not_filled_workshop_attendees_count
+      WHERE workshop_reservation_id = @workshop_reservation_id) = 0
+    THROW 50001, 'All attendees data was provided for this workshop reservation.', 0;
+  IF (SELECT conference_reservation_detail_id
+      FROM workshop_reservations
+      WHERE id = @workshop_reservation_id) != (SELECT conference_reservation_detail_id
+                                               FROM conference_attendees
+                                               WHERE id = @conference_attendee_id)
+    THROW 50001, 'Workshop reservation must have the same conference reservation detail as conference attendee.', 0;
+
+  INSERT INTO workshop_attendees VALUES (@conference_attendee_id, @workshop_reservation_id);
+GO
+```
+### Wyrzucane błędy
+Procedura wyrzuci błąd:
+- przy próbie doania uczestnika, gdy wszyscy już zostali zdefiniowani
+- gdy podany uczestnik konferencji dotyczy innej pozycji rezerwacji niż podana rezerwacja warsztatu
 
