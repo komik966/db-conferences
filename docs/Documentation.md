@@ -1,21 +1,28 @@
+# System zarządzania konferencjami
+Podstawy baz danych - projekt i implementacja systemu bazodanowego
+
+Autorzy:
+- Konrad Mikucki
+- Dominik Żurek
+
 # Spis treści
 - [Tabele](#tabele)
     - [people](#tabela-people)
     - [customers](#tabela-customers)
-    - [customer_individual](#tabela-customer_individual)
+    - [customer_individual](#tabela-customer-individual)
     - [companies](#tabela-companies)
     - [conferences](#tabela-conferences)
-    - [conference_discounts](#tabela-conference_discounts)
+    - [conference_discounts](#tabela-conference-discounts)
     - [conference_days](#tabela-conference-days)
     - [workshops](#tabela-workshops)
-    - [workshop_days](#tabela-workshop_days)
-    - [conference_reservations](#tabela-conference_reservations)
-    - [conference_reservation_details](#tabela-conference_reservation_details)
-    - [student_cards](#tabela-student_cards)
-    - [conference_attendees](#tabela-conference_attendees)
-    - [conference_attendees_students](#tabela-conference_attendees_students)
-    - [workshop_reservations](#tabela-workshop_reservations)
-    - [workshop_attendees](#tabela-workshop_attendees)
+    - [workshop_days](#tabela-workshop-days)
+    - [conference_reservations](#tabela-conference-reservations)
+    - [conference_reservation_details](#tabela-conference-reservation-details)
+    - [student_cards](#tabela-student-cards)
+    - [conference_attendees](#tabela-conference-attendees)
+    - [conference_attendees_students](#tabela-conference-attendees-students)
+    - [workshop_reservations](#tabela-workshop-reservations)
+    - [workshop_attendees](#tabela-workshop-attendees)
 - [Funkcje](#funkcje)
     - [date_range](#funkcja-date-range)
 - [Widoki](#widoki)
@@ -69,7 +76,7 @@ CREATE TABLE customers (
 );
 ```
 
-## tabela customer_individual
+## tabela customer individual
 ### Kod
 ```sql
 CREATE TABLE customer_individual (
@@ -118,7 +125,7 @@ CREATE TABLE conferences (
 );
 ```
 
-## tabela conference_discounts
+## tabela conference discounts
 ### Kod
 ```sql
 CREATE TABLE conference_discounts
@@ -164,7 +171,7 @@ CREATE TABLE workshops (
 );
 ```
 
-## tabela workshop_days
+## tabela workshop days
 ### Kod
 ```sql
 CREATE TABLE workshop_days (
@@ -185,7 +192,7 @@ CREATE TABLE workshop_days (
 );
 ```
 
-## tabela conference_reservations
+## tabela conference reservations
 ### Kod
 ```sql
 CREATE TABLE conference_reservations (
@@ -199,7 +206,7 @@ CREATE TABLE conference_reservations (
 );
 ```
 
-## tabela conference_reservation_details
+## tabela conference reservation details
 ### Kod
 ```sql
 CREATE TABLE conference_reservation_details (
@@ -216,7 +223,7 @@ CREATE TABLE conference_reservation_details (
 );
 ```
 
-## tabela student_cards
+## tabela student cards
 ### Kod
 ```sql
 CREATE TABLE student_cards (
@@ -230,7 +237,7 @@ CREATE TABLE student_cards (
 );
 ```
 
-## tabela conference_attendees
+## tabela conference attendees
 ### Kod
 ```sql
 CREATE TABLE conference_attendees (
@@ -245,7 +252,7 @@ CREATE TABLE conference_attendees (
 );
 ```
 
-## tabela conference_attendees_students
+## tabela conference attendees students
 ### Kod
 ```sql
 CREATE TABLE conference_attendees_students (
@@ -260,7 +267,7 @@ CREATE TABLE conference_attendees_students (
 );
 ```
 
-## tabela workshop_reservations
+## tabela workshop reservations
 ### Kod
 ```sql
 CREATE TABLE workshop_reservations (
@@ -277,7 +284,7 @@ CREATE TABLE workshop_reservations (
 );
 ```
 
-## tabela workshop_attendees
+## tabela workshop attendees
 ### Kod
 ```sql
 CREATE TABLE workshop_attendees (
