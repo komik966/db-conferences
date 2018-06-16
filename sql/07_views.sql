@@ -55,6 +55,20 @@ CREATE VIEW should_phone_for_conference_attendees_data AS
         c2.start_date < DATEADD(WEEK, 2, CURRENT_TIMESTAMP)
         AND student_and_non_student_count > 0;
 
+CREATE VIEW filled_workshop_attendees_count AS
+  SELECT
+    wr.id                             AS workshop_reservation_id,
+    COUNT(wa.workshop_reservation_id) AS attendees_count
+  FROM workshop_reservations wr
+    LEFT JOIN workshop_attendees wa on wr.id = wa.workshop_reservation_id
+  GROUP BY wr.id;
+
+CREATE VIEW not_filled_workshop_attendees_count AS
+  SELECT
+    wr.id                                        AS workshop_reservation_id,
+    (wr.attendees_amount - fwac.attendees_count) AS attendees_count
+  FROM workshop_reservations wr INNER JOIN filled_workshop_attendees_count fwac ON wr.id = fwac.workshop_reservation_id;
+
 CREATE VIEW conference_reservations_too_late_for_payment AS
   SELECT *
   FROM conference_reservations

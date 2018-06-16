@@ -18,5 +18,5 @@ CREATE TABLE workshop_attendees (
 
   CONSTRAINT pk_workshop_attendees PRIMARY KEY (id),
   CONSTRAINT fk_workshop_attendees_conference_attendee FOREIGN KEY (conference_attendee_id) REFERENCES conference_attendees ON DELETE CASCADE,
-  CONSTRAINT fk_workshop_attendees_workshop_reservation FOREIGN KEY (workshop_reservation_id) REFERENCES workshop_reservations ON DELETE CASCADE,
+  CONSTRAINT fk_workshop_attendees_workshop_reservation FOREIGN KEY (workshop_reservation_id) REFERENCES workshop_reservations,
 );
