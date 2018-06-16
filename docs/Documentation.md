@@ -1,11 +1,32 @@
 # Spis treści
 - [Tabele](#tabele)
+    - [people](#tabela-people)
+    - [customers](#tabela-customers)
+    - [customer_individual](#tabela-customer_individual)
+    - [companies](#tabela-companies)
     - [conferences](#tabela-conferences)
+    - [conference_discounts](#tabela-conference_discounts)
     - [conference_days](#tabela-conference-days)
+    - [workshops](#tabela-workshops)
+    - [workshop_days](#tabela-workshop_days)
+    - [conference_reservations](#tabela-conference_reservations)
+    - [conference_reservation_details](#tabela-conference_reservation_details)
+    - [student_cards](#tabela-student_cards)
+    - [conference_attendees](#tabela-conference_attendees)
+    - [conference_attendees_students](#tabela-conference_attendees_students)
+    - [workshop_reservations](#tabela-workshop_reservations)
+    - [workshop_attendees](#tabela-workshop_attendees)
 - [Funkcje](#funkcje)
     - [date_range](#funkcja-date-range)
 - [Widoki](#widoki)
     - [conference_day_max_attendees](#widok-conference-day-max-attendees)
+    - [filled_conference_attendees_count](#widok-filled-conference-attendees-count)
+    - [declared_conference_attendees_count](#widok-declared-conference-attendees-count)
+    - [not_filled_conference_attendees_count](#widok-not-filled-conference-attendees-count)
+    - [should_phone_for_conference_attendees_data](#widok-should-phone-for-conference-attendees-data)
+    - [filled_workshop_attendees_count](#widok-filled-workshop-attendees-count)
+    - [not_filled_workshop_attendees_count](#widok-not-filled-workshop-attendees-count)
+    - [conference_reservations_too_late_for_payment](#widok-conference-reservations-too-late-for-payment)
 - [Procedury](#procedury)
     - [create_conference](#procedura-create-conference)
     - [create_conference_discount](#procedura-create-conference-discount)
@@ -20,6 +41,57 @@
     - [add_workshop_day_reservation](#procedura-add-workshop-day-reservation)
 
 # Tabele
+## tabela people
+### Kod
+```sql
+CREATE TABLE people (
+  id          INT IDENTITY,
+  first_name  VARCHAR(255) NOT NULL,
+  second_name VARCHAR(255) NOT NULL,
+
+  CONSTRAINT pk_people PRIMARY KEY (id),
+);
+```
+
+## tabela customers
+### Kod
+```sql
+CREATE TABLE customers (
+  id           INT IDENTITY,
+  phone_number VARCHAR(32) NOT NULL,
+
+  CONSTRAINT pk_customers PRIMARY KEY (id),
+  CONSTRAINT uq_customers_phone_number UNIQUE (phone_number),
+);
+```
+
+## tabela customer_individual
+### Kod
+```sql
+CREATE TABLE customer_individual (
+  customer_id INT,
+  person_id   INT NOT NULL,
+
+  CONSTRAINT pk_customer_individual PRIMARY KEY (customer_id),
+  CONSTRAINT fk_customer_individual_customer FOREIGN KEY (customer_id) REFERENCES customers,
+  CONSTRAINT uq_customer_individual_person UNIQUE (person_id),
+  CONSTRAINT fk_customer_individual_person FOREIGN KEY (person_id) REFERENCES people,
+);
+```
+
+## tabela companies
+### Kod
+```sql
+CREATE TABLE companies (
+  customer_id INT          NOT NULL,
+  name        VARCHAR(255) NOT NULL,
+  nip         VARCHAR(32)  NOT NULL,
+
+  CONSTRAINT pk_companies PRIMARY KEY (customer_id),
+  CONSTRAINT fk_companies_customer FOREIGN KEY (customer_id) REFERENCES customers,
+  CONSTRAINT uq_companies_nip UNIQUE (nip),
+);
+```
 ## tabela conferences
 ### Kod
 ```sql
@@ -42,6 +114,24 @@ CREATE TABLE conferences (
 );
 ```
 
+## tabela conference_discounts
+### Kod
+```sql
+CREATE TABLE conference_discounts
+(
+  id            INT IDENTITY,
+  conference_id INT          NOT NULL,
+  due_date      DATETIME2(0) NOT NULL,
+  discount      FLOAT        NOT NULL,
+
+  CONSTRAINT pk_conference_discounts PRIMARY KEY (id),
+  CONSTRAINT fk_conference_discounts_conference FOREIGN KEY (conference_id) REFERENCES conferences,
+  CONSTRAINT ck_conference_discounts_discount CHECK (discount > 0 AND discount <= 1),
+  CONSTRAINT ck_conference_discounts_due_date CHECK (due_date > CURRENT_TIMESTAMP),
+  CONSTRAINT uq_conference_discounts_due_date UNIQUE (conference_id, due_date)
+);
+```
+
 ## tabela conference days
 ### Kod
 ```sql
@@ -55,6 +145,146 @@ CREATE TABLE conference_days
   CONSTRAINT fk_conference_days_conference FOREIGN KEY (conference_id) REFERENCES conferences,
   CONSTRAINT uq_conference_days_date UNIQUE (conference_id, date)
 )
+```
+
+## tabela workshops
+### Kod
+```sql
+CREATE TABLE workshops (
+  id            INT IDENTITY,
+  name          VARCHAR(64) NOT NULL,
+  max_attendees INT         NOT NULL,
+
+  CONSTRAINT pk_workshops PRIMARY KEY (id),
+  CONSTRAINT ck_workshops_max_attendees CHECK (max_attendees > 0),
+);
+```
+
+## tabela workshop_days
+### Kod
+```sql
+CREATE TABLE workshop_days (
+  id                INT IDENTITY,
+  workshop_id       INT        NOT NULL,
+  conference_day_id INT        NOT NULL,
+  start_time        TIME(0)    NOT NULL,
+  end_time          TIME(0)    NOT NULL,
+  price             SMALLMONEY NOT NULL,
+  max_attendees     INT        NOT NULL,
+
+  CONSTRAINT pk_workshop_days PRIMARY KEY (id),
+  CONSTRAINT fk_workshop_days_workshop FOREIGN KEY (workshop_id) REFERENCES workshops,
+  CONSTRAINT fk_workshop_days_conference_day FOREIGN KEY (conference_day_id) REFERENCES conference_days,
+  CONSTRAINT ck_workshop_days_end_time CHECK (end_time > start_time),
+  CONSTRAINT ck_workshop_days_price CHECK (price >= 0),
+  CONSTRAINT ck_workshop_days_max_attendees CHECK (max_attendees > 0),
+);
+```
+
+## tabela conference_reservations
+### Kod
+```sql
+CREATE TABLE conference_reservations (
+  id               INT                   IDENTITY,
+  customer_id      INT          NOT NULL,
+  reservation_date DATETIME2(0) NOT NULL CONSTRAINT df_conference_reservations_reservation_date DEFAULT CURRENT_TIMESTAMP,
+  payment_date     DATETIME2(0)          CONSTRAINT df_conference_reservations_payment_date DEFAULT NULL,
+
+  CONSTRAINT pk_conference_reservations PRIMARY KEY (id),
+  CONSTRAINT fk_conference_reservations_customer FOREIGN KEY (customer_id) REFERENCES customers,
+);
+```
+
+## tabela conference_reservation_details
+### Kod
+```sql
+CREATE TABLE conference_reservation_details (
+  id                        INT IDENTITY,
+  conference_day_id         INT NOT NULL,
+  conference_reservation_id INT NOT NULL,
+  attendees_amount          INT NOT NULL,
+
+  CONSTRAINT pk_conference_reservation_details PRIMARY KEY (id),
+  CONSTRAINT fk_conference_reservation_details_conference_day FOREIGN KEY (conference_day_id) REFERENCES conference_days,
+  CONSTRAINT fk_conference_reservation_details_conference_reservation FOREIGN KEY (conference_reservation_id) REFERENCES conference_reservations ON DELETE CASCADE,
+  CONSTRAINT uq_conference_reservation_details_conference_day_reservation UNIQUE (conference_day_id, conference_reservation_id),
+  CONSTRAINT ck_conference_reservation_details_attendees_amount CHECK (attendees_amount > 0),
+);
+```
+
+## tabela student_cards
+### Kod
+```sql
+CREATE TABLE student_cards (
+  id                               INT IDENTITY,
+  conference_reservation_detail_id INT         NOT NULL,
+  number                           VARCHAR(32) NOT NULL,
+
+  CONSTRAINT pk_student_card PRIMARY KEY (id),
+  CONSTRAINT fk_student_card_conference_reservation_detail FOREIGN KEY (conference_reservation_detail_id) REFERENCES conference_reservation_details ON DELETE CASCADE,
+  CONSTRAINT uq_student_card_number UNIQUE (conference_reservation_detail_id, number),
+);
+```
+
+## tabela conference_attendees
+### Kod
+```sql
+CREATE TABLE conference_attendees (
+  id                               INT IDENTITY,
+  person_id                        INT NOT NULL,
+  conference_reservation_detail_id INT NOT NULL,
+
+  CONSTRAINT pk_conference_attendees PRIMARY KEY (id),
+  CONSTRAINT fk_conference_attendees_person FOREIGN KEY (person_id) REFERENCES people,
+  CONSTRAINT fk_conference_attendees_conference_reservation_detail FOREIGN KEY (conference_reservation_detail_id) REFERENCES conference_reservation_details ON DELETE CASCADE,
+  CONSTRAINT uq_conference_attendees_person_reservation_detail UNIQUE (person_id, conference_reservation_detail_id)
+);
+```
+
+## tabela conference_attendees_students
+### Kod
+```sql
+CREATE TABLE conference_attendees_students (
+  conference_attendee_id INT NOT NULL,
+  student_card_id        INT NOT NULL,
+
+  CONSTRAINT pk_conference_attendees_student PRIMARY KEY (conference_attendee_id),
+  CONSTRAINT uq_conference_attendees_students_conference_attendee UNIQUE (conference_attendee_id),
+  CONSTRAINT uq_conference_attendees_students_student_card_id UNIQUE (student_card_id),
+  CONSTRAINT fk_conference_attendees_student_conference_attendee FOREIGN KEY (conference_attendee_id) REFERENCES conference_attendees ON DELETE CASCADE,
+  CONSTRAINT fk_conference_attendees_student_student_card FOREIGN KEY (student_card_id) REFERENCES student_cards,
+);
+```
+
+## tabela workshop_reservations
+### Kod
+```sql
+CREATE TABLE workshop_reservations (
+  id                               INT IDENTITY,
+  conference_reservation_detail_id INT NOT NULL,
+  workshop_day_id                  INT NOT NULL,
+  attendees_amount                 INT NOT NULL,
+
+  CONSTRAINT pk_workshop_reservations PRIMARY KEY (id),
+  CONSTRAINT fk_workshop_reservations_conference_reservation_detail FOREIGN KEY (conference_reservation_detail_id) REFERENCES conference_reservation_details ON DELETE CASCADE,
+  CONSTRAINT fk_workshop_reservations_workshop_day FOREIGN KEY (workshop_day_id) REFERENCES workshop_days,
+  CONSTRAINT ck_workshop_reservations_attendees_amount CHECK (attendees_amount > 0),
+  CONSTRAINT uq_workshop_reservations_conference_reservation_workshop_day UNIQUE (conference_reservation_detail_id, workshop_day_id),
+);
+```
+
+## tabela workshop_attendees
+### Kod
+```sql
+CREATE TABLE workshop_attendees (
+  id                      INT IDENTITY,
+  conference_attendee_id  INT NOT NULL,
+  workshop_reservation_id INT NOT NULL,
+
+  CONSTRAINT pk_workshop_attendees PRIMARY KEY (id),
+  CONSTRAINT fk_workshop_attendees_conference_attendee FOREIGN KEY (conference_attendee_id) REFERENCES conference_attendees ON DELETE CASCADE,
+  CONSTRAINT fk_workshop_attendees_workshop_reservation FOREIGN KEY (workshop_reservation_id) REFERENCES workshop_reservations,
+);
 ```
 
 # Funkcje
